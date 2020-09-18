@@ -3,6 +3,7 @@ public class Unit {
     private UnitType unitType;
     private LineType lineType;
     private LineWeight lineWeight;
+    private boolean isSubgrid;
     private char lightNormal;
     private char heavyNormal;
     private char lightDotted;
@@ -15,6 +16,7 @@ public class Unit {
         unitType = instanceType.unitType;
         lineType = LineType.NORMAL;
         lineWeight = LineWeight.LIGHT;
+        isSubgrid = instanceType.isSubgrid;
         lightNormal = instanceType.lightNormal;
         heavyNormal = instanceType.heavyNormal;
         lightDotted = instanceType.lightDotted;
@@ -22,6 +24,21 @@ public class Unit {
         doubleLined = instanceType.doubleLined;
         currentChar = lightNormal;
         currentNum = 0;
+    }
+
+    public UnitType getType () {
+        return unitType;
+    }
+
+    public boolean isSubgrid () {
+        return isSubgrid;
+    }
+
+    public void setNum (int num) {
+        if (unitType != UnitType.NUMBER) {
+            return;
+        }
+        currentNum = num;
     }
 
     public void setLineType (LineType lineType) {
@@ -67,6 +84,9 @@ public class Unit {
                 break;
             case DOUBLE:
                 currentChar = doubleLined;
+                break;
+            case BLANK:
+                currentChar = ' ';
                 break;
         }
     }

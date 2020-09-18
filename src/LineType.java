@@ -4,5 +4,5 @@
  *  ┼────┼  ┼╌╌╌╌┼  ╬════╬
  */
 public enum LineType {
-    NORMAL, DOTTED, DOUBLE;
+    NORMAL, DOTTED, DOUBLE, BLANK;
 }
