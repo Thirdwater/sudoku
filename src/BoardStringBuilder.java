@@ -28,7 +28,6 @@ import java.util.HashMap;
 public class BoardStringBuilder {
 
     private static Map<Integer, Integer> phoneToNumpadMap;
-    private static Map<Integer, Integer> numpadToPhoneMap;
 
     static {
         phoneToNumpadMap = new HashMap<>();
@@ -41,32 +40,19 @@ public class BoardStringBuilder {
         phoneToNumpadMap.put(7, 1);
         phoneToNumpadMap.put(8, 2);
         phoneToNumpadMap.put(9, 3);
-        numpadToPhoneMap = phoneToNumpadMap;
-    }
-
-    /**
-     *  ┼───┼  ┼────┼  ┼────┼  ┼─────┼
-     *  │ 1 │  │ 1  │  │  1 │  │  1  │
-     *  ┼───┼  ┼────┼  ┼────┼  ┼─────┼
-     */
-    public enum CellWidth {
-        THIN, SQUARE_LEFT, SQUARE_RIGHT, THICK;
     }
 
     private LineType cellLineType = LineType.NORMAL;
     private LineWeight cellLineWeight = LineWeight.LIGHT;
     private LineType subgridLineType = LineType.NORMAL;
     private LineWeight subgridLineWeight = LineWeight.HEAVY;
-    private LineType selectionLineType = LineType.BLANK;
-    private LineWeight selectionLineWeight = LineWeight.LIGHT;
-    private CellWidth cellWidth = CellWidth.THIN;
+    private LineType selectionLineType = LineType.DOUBLE;
+    private LineWeight selectionLineWeight = LineWeight.HEAVY;
 
     private List<List<Unit>> units;
     private List<List<UnitInstanceType>> unitTypesOrdering;
     private List<RowType> rowsOrdering;
     private List<ColumnType> columnsOrdering;
-    private Map<RowType, List<Integer>> rowTypeIndicesMap;
-    private Map<ColumnType, List<Integer>> columnTypeIndicesMap;
     private Map<Integer, List<Unit>> subgridBorderIndicesMap;
     private Map<Integer, Map<Integer, List<Unit>>> cellBorderIndicesMap;
     private Map<Integer, Map<Integer, Unit>> numUnitsIndexMap;
@@ -85,15 +71,15 @@ public class BoardStringBuilder {
     }
 
     public BoardStringBuilder () {
-        initRows();
-        initColumns();
+        initRowsOrdering();
+        initColumnsOrdering();
         initUnitsOrdering();
         initUnits();
         setUnits();
         hasSelection = false;
     }
 
-    private void initRows () {
+    private void initRowsOrdering () {
         rowsOrdering = new ArrayList<>(Arrays.asList(
                 RowType.TOP,
                 RowType.NUMBER, RowType.CELL_BORDER,
@@ -106,17 +92,9 @@ public class BoardStringBuilder {
                 RowType.NUMBER, RowType.CELL_BORDER,
                 RowType.NUMBER, RowType.BOTTOM
         ));
-        rowTypeIndicesMap = new HashMap<>();
-        for (int i = 0; i < rowsOrdering.size(); i++) {
-            RowType rowType = rowsOrdering.get(i);
-            if (!rowTypeIndicesMap.containsKey(rowType)) {
-                rowTypeIndicesMap.put(rowType, new ArrayList<>());
-            }
-            rowTypeIndicesMap.get(rowType).add(i);
-        }
     }
 
-    private void initColumns () {
+    private void initColumnsOrdering () {
         columnsOrdering = new ArrayList<>(Arrays.asList(
                 ColumnType.LEFT,
                 ColumnType.SPACE, ColumnType.NUMBER, ColumnType.SPACE, ColumnType.CELL_BORDER,
@@ -129,14 +107,6 @@ public class BoardStringBuilder {
                 ColumnType.SPACE, ColumnType.NUMBER, ColumnType.SPACE, ColumnType.CELL_BORDER,
                 ColumnType.SPACE, ColumnType.NUMBER, ColumnType.SPACE, ColumnType.RIGHT
         ));
-        columnTypeIndicesMap = new HashMap<>();
-        for (int i = 0; i < columnsOrdering.size(); i++) {
-            ColumnType columnType = columnsOrdering.get(i);
-            if (!columnTypeIndicesMap.containsKey(columnType)) {
-                columnTypeIndicesMap.put(columnType, new ArrayList<>());
-            }
-            columnTypeIndicesMap.get(columnType).add(i);
-        }
     }
 
     private void initUnitsOrdering () {
@@ -305,8 +275,6 @@ public class BoardStringBuilder {
                     indexSubgridBorderUnit(unit, numpadSubgrid);
                 }
             }
-            System.out.format("Subgrid %d: %s%n",
-                    phoneSubgrid, subgridBorderIndicesMap.get(numpadSubgrid));
 
             for (int phoneCell = 1; phoneCell <= 9; phoneCell++) {
                 int startCellI = startI + (((phoneCell - 1) / 3) * (cellHeight - 1));
@@ -321,8 +289,6 @@ public class BoardStringBuilder {
                         indexSubgridCellNumUnit(unit, numpadSubgrid, numpadCell);
                     }
                 }
-                System.out.format("Subgrid %d, Cell %d: %s%n",
-                        phoneSubgrid, phoneCell, cellBorderIndicesMap.get(numpadSubgrid).get(numpadCell));
             }
         }
 
@@ -330,7 +296,6 @@ public class BoardStringBuilder {
             for (int column = 1; column <= 9; column++) {
                 int i = ((row - 1) * (cellHeight - 1)) + numVerticalOffset;
                 int j = ((column - 1) * (cellWidth - 1)) + numHorizontalOffset;
-                System.out.format("Number: (%d, %d) -> (%d, %d)%n", row, column, i, j);
                 Unit unit = units.get(i).get(j);
                 indexRowColumnNumUnit(unit, row, column);
             }
@@ -486,17 +451,35 @@ public class BoardStringBuilder {
         hasSelection = false;
     }
 
+    public void clear () {
+        deselect();
+        for (int i = 1; i <= 9; i++) {
+            for (int j = 1; j <= 9; j++) {
+                numUnitsIndexMap.get(i).get(j).setNum(0);
+            }
+        }
+    }
+
+    public List<StringBuilder> getStringBuilder () {
+        List<StringBuilder> list = new ArrayList<>();
+        for (List<Unit> unitRow: units) {
+            StringBuilder rowBuilder = new StringBuilder();
+            for (Unit unit: unitRow) {
+                rowBuilder.append(unit);
+            }
+            list.add(rowBuilder);
+        }
+        return list;
+    }
+
     public void test () {
         for (int i = 1; i <= 9; i++) {
             setNumBySubgridCell(i, i, i);
         }
         selectSubgrid(5);
-        selectCell(8);
-        for (List<Unit> unitRow: units) {
-            for (Unit unit: unitRow) {
-                System.out.print(unit);
-            }
-            System.out.println();
+        List<StringBuilder> l = getStringBuilder();
+        for (StringBuilder sb: l) {
+            System.out.println(sb);
         }
     }
 

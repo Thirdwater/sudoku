@@ -38,6 +38,7 @@ public class Unit {
         if (unitType != UnitType.NUMBER) {
             return;
         }
+        assert 0 <= num && num <= 9;
         currentNum = num;
     }
 
