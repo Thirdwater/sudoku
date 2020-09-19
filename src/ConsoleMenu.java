@@ -1,4 +1,7 @@
+import biz.source_code.utils.RawConsoleInput;
+
 import java.io.PrintStream;
+import java.util.Scanner;
 
 public class ConsoleMenu {
 
@@ -13,6 +16,13 @@ public class ConsoleMenu {
     }
 
     private boolean isWindows;
+    private boolean isRunning;
+
+    public void start () throws Exception {
+        init();
+        clearConsole();
+        run();
+    }
 
     public void init () throws Exception {
         System.setOut(new PrintStream(System.out, true, "UTF-8"));
@@ -26,6 +36,22 @@ public class ConsoleMenu {
         } else {
             Runtime.getRuntime().exec("clear");
         }
+    }
+
+    public void run () throws Exception {
+        isRunning = true;
+        RawConsoleInput consoleInput = new RawConsoleInput();
+        while (isRunning) {
+            int c = consoleInput.read(true);
+            System.out.println(c);
+            if (c == 3) {  // Ctrl + c
+                stopRunning();
+            }
+        }
+    }
+
+    public void stopRunning () {
+        isRunning = false;
     }
 
 }
