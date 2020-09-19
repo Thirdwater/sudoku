@@ -1,3 +1,5 @@
+package view.console;
+
 import java.io.PrintStream;
 import biz.source_code.utils.RawConsoleInput;
 
@@ -25,6 +27,7 @@ public class ConsoleMenu {
 
     public void init () throws Exception {
         System.setOut(new PrintStream(System.out, true, "UTF-8"));
+        currentMenu = new Menu () {};
     }
 
     public void clearConsole () throws Exception {
@@ -45,7 +48,7 @@ public class ConsoleMenu {
             if (isExitSequence(input)) {
                 stopRunning();
             }
-            processInput(input);
+            currentMenu.processInput(input);
             System.out.println(input);
         }
     }
@@ -56,10 +59,6 @@ public class ConsoleMenu {
 
     private boolean isExitSequence (int input) {
         return input == 3;  // Ctrl + c
-    }
-
-    private void processInput (int input) {
-        currentMenu.processInput(input);
     }
 
 }

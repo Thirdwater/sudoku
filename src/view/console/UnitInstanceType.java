@@ -1,3 +1,5 @@
+package view.console;
+
 public enum UnitInstanceType {
 
     TOP_LEFT_CORNER('┌', '┏', '╔', true),

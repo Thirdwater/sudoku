@@ -1,3 +1,7 @@
+package model;
+
+import model.Cell;
+
 import java.util.Arrays;
 
 public class Board {

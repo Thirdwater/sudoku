@@ -1,3 +1,5 @@
+package view.console;
+
 public class Unit {
 
     private UnitType unitType;

@@ -1,3 +1,5 @@
+package view.console;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
@@ -470,17 +472,6 @@ public class BoardStringBuilder {
             list.add(rowBuilder);
         }
         return list;
-    }
-
-    public void test () {
-        for (int i = 1; i <= 9; i++) {
-            setNumBySubgridCell(i, i, i);
-        }
-        selectSubgrid(5);
-        List<StringBuilder> l = getStringBuilder();
-        for (StringBuilder sb: l) {
-            System.out.println(sb);
-        }
     }
 
 }
