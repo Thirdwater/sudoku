@@ -1,9 +1,13 @@
 package view.console;
 
-public abstract class Menu {
+public interface Menu {
 
-    public void processInput (int input) {
+    default public void init () {
         return;
+    }
+
+    default public Menu processInput (int input) {
+        return this;
     }
 
 }

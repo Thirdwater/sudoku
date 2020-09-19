@@ -364,12 +364,18 @@ public class BoardStringBuilder {
         }
     }
 
+    public void setNum (int num) {
+        setNumBySubgridCell(num, lastSelectionSubgridNum, lastSelectionCellNum);
+        deselect();
+    }
+
     public void setNumByIndex (int num, int row, int column) {
         assert 1 <= num && num <= 9;
         assert 1 <= row && row <= 9;
         assert 1 <= column && column <= 9;
 
         numUnitsIndexMap.get(row).get(column).setNum(num);
+        deselect();
     }
 
     public void setNumBySubgridCell (int num, int subgrid, int cell) {
@@ -378,6 +384,7 @@ public class BoardStringBuilder {
         assert 1 <= cell && cell <= 9;
 
         numUnitsSubgridCellMap.get(subgrid).get(cell).setNum(num);
+        deselect();
     }
 
     public void select (SelectionType selectionType, int num) {
@@ -472,6 +479,13 @@ public class BoardStringBuilder {
             list.add(rowBuilder);
         }
         return list;
+    }
+
+    public void print () {
+        List<StringBuilder> rows = getStringBuilder();
+        for (StringBuilder row: rows) {
+            System.out.println(row);
+        }
     }
 
 }

@@ -21,13 +21,14 @@ public class ConsoleMenu {
 
     public void start () throws Exception {
         init();
-        clearConsole();
         run();
     }
 
     public void init () throws Exception {
         System.setOut(new PrintStream(System.out, true, "UTF-8"));
-        currentMenu = new Menu () {};
+        clearConsole();
+        currentMenu = BaseMenu.GAME;
+        currentMenu.init();
     }
 
     public void clearConsole () throws Exception {
@@ -45,10 +46,11 @@ public class ConsoleMenu {
         RawConsoleInput consoleInput = new RawConsoleInput();
         while (isRunning) {
             int input = consoleInput.read(true);
+            clearConsole();
             if (isExitSequence(input)) {
                 stopRunning();
             }
-            currentMenu.processInput(input);
+            processInput(input);
             System.out.println(input);
         }
     }
@@ -59,6 +61,14 @@ public class ConsoleMenu {
 
     private boolean isExitSequence (int input) {
         return input == 3;  // Ctrl + c
+    }
+
+    private void processInput (int input) {
+        Menu targetMenu = currentMenu.processInput(input);
+        if (targetMenu != currentMenu) {
+            targetMenu.init();
+            currentMenu = targetMenu;
+        }
     }
 
 }
